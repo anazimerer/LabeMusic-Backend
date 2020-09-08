@@ -1,2 +1,2 @@
 # LabeMusic-Back-end
-Aplicação para criação de músicas 
+Aplicação para gerenciamento de músicas 
