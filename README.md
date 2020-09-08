@@ -1,7 +1,7 @@
 # LabeMusic-Back-end
-Aplicação para criação de músicas 
+Aplicação para gerenciamento de músicas 
 
-MODELAGEM:
+- MODELAGEM:
 ```
 CREATE TABLE IF NOT EXISTS labemusic_user(
   id VARCHAR(255) PRIMARY KEY,
@@ -35,3 +35,4 @@ CREATE TABLE labemusic_music_genre(
     FOREIGN KEY (genre_id) REFERENCES labemusic_genre(id)    
 );
 ```
+
