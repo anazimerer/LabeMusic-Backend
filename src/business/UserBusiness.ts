@@ -1,9 +1,11 @@
-import { Authenticator } from './../services/Authenticator';
+import { UserDatabase } from './../data/UserDatabase';
+import { GenericError } from './../error/GenericError';
+import { NotFoundError } from './../error/NotFoundError';
 import { InvalidParameterError } from './../error/InvalidParameterError';
+import { Authenticator } from './../services/Authenticator';
 import { HashManager } from './../services/HashManager';
 import { IdGenerator } from './../services/IdGenerator';
-import { UserInputDTO } from './../model/User';
-import { UserDatabase } from '../data/UserDatabase';
+import { UserInputDTO, LoginInputDTO, User } from './../model/User';
 
 export class UserBusiness {
     async createUser(input: UserInputDTO) {
@@ -12,7 +14,7 @@ export class UserBusiness {
         }
 
         if (input.password.length < 6) {
-            throw new Error("Your password must be at least 6 characters")
+            throw new GenericError("Your password must be at least 6 characters")
         }
 
         const idGenerator = new IdGenerator()
@@ -28,5 +30,31 @@ export class UserBusiness {
         const token = authenticator.generateToken({ id })
 
         return token;
+    }
+
+    async getUser(input: LoginInputDTO) {
+        if ((!input.email && !input.nickname) || !input.password) {
+            throw new InvalidParameterError("Requires email or nickname and password")
+        }
+
+        const userDatabase = new UserDatabase();
+        const userFromDb: User = await userDatabase.getUser(input.nickname, input.email)
+
+        const hashManager = new HashManager()
+        const passwordIsCorrect = await hashManager.compare(input.password, userFromDb.getPassword())
+
+        if (!passwordIsCorrect) {
+            throw new NotFoundError("Incorrect password")
+        }
+
+        const authenticator = new Authenticator()
+        const token = authenticator.generateToken({ id: userFromDb.getId() })
+
+        if (!token) {
+            throw new NotFoundError("User not fond")
+        }
+
+        return token;
+
     }
 }

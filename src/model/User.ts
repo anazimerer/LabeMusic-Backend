@@ -46,6 +46,10 @@ export class User {
     setPassword(password: string) {
         this.password = password;
     }
+
+    static toUserModel(user: any): User {
+        return new User(user.id, user.name, user.nickname, user.email, user.password);
+    }
 }
 
 export interface UserInputDTO {
@@ -56,6 +60,7 @@ export interface UserInputDTO {
 }
 
 export interface LoginInputDTO {
-    email: string;
+    email?: string;
+    nickname?: string;
     password: string;
 }
