@@ -1,5 +1,5 @@
 # LabeMusic-Back-end
-Aplicação para gerenciamento de músicas 
+Plataforma de publicação de áudio
 
 - MODELAGEM:
 ```
