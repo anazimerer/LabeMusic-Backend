@@ -1,9 +1,20 @@
+import { IdGenerator } from './../services/IdGenerator';
+import { HashManager } from './../services/HashManager';
+import { UserBusiness } from './../business/UserBusiness';
 import { BaseDatabase } from './../data/BaseDatabase';
-import { User, UserInputDTO, LoginInputDTO } from './../model/User';
+import { UserInputDTO, LoginInputDTO } from './../model/User';
 import { Request, Response } from 'express'
-import { UserBusiness } from '../business/UserBusiness';
+import { UserDatabase } from '../data/UserDatabase';
+import { Authenticator } from '../services/Authenticator';
 
 export class UserController {
+
+    private static userBusiness = new UserBusiness(
+        new UserDatabase(),
+        new IdGenerator(),
+        new HashManager(),
+        new Authenticator())
+
     async signup(req: Request, res: Response): Promise<void> {
         try {
             const input: UserInputDTO = {
@@ -13,8 +24,8 @@ export class UserController {
                 password: req.body.password
             }
 
-            const userBusiness = new UserBusiness
-            const token = await userBusiness.createUser(input)
+
+            const token = await UserController.userBusiness.createUser(input)
 
             res.status(200).send({ token })
         } catch (error) {
@@ -31,8 +42,7 @@ export class UserController {
                 password: req.body.password
             }
 
-            const userBusiness = new UserBusiness()
-            const token = await userBusiness.getUser(input)
+            const token = await UserController.userBusiness.getUser(input)
 
             if (!token) {
                 throw new Error("Invalid login")
