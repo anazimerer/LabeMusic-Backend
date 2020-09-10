@@ -43,6 +43,11 @@ export class UserBusiness {
         }
 
         const userFromDb: User = await this.userDatabase.getUser(input.nickname, input.email)
+
+        if (!userFromDb) {
+            throw new NotFoundError("User not found")
+        }
+
         const passwordIsCorrect = await this.hashManager.compare(input.password, userFromDb.getPassword())
 
         if (!passwordIsCorrect) {
@@ -52,7 +57,7 @@ export class UserBusiness {
         const token = this.authenticator.generateToken({ id: userFromDb.getId() })
 
         if (!token) {
-            throw new NotFoundError("User not fond")
+            throw new NotFoundError("User not found")
         }
 
         return token;

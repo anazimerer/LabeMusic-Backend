@@ -1,8 +1,7 @@
-import { User } from './../../src/model/User';
-import { UserBusiness } from '../../src/business/UserBusiness';
-import { HashManager } from '../../src/services/HashManager';
-import { UserInputDTO } from '../../src/model/User';
-import { hash } from 'bcryptjs';
+import { User } from '../../../src/model/User';
+import { UserBusiness } from '../../../src/business/UserBusiness';
+import { HashManager } from '../../../src/services/HashManager';
+import { UserInputDTO } from '../../../src/model/User';
 
 describe('Testing signup function', () => {
     let userDatabase = {
