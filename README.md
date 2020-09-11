@@ -29,7 +29,7 @@ CREATE TABLE labemusic_genre(
 ```
 ```
 CREATE TABLE labemusic_music_genre(
-	genre_id VARCHAR (255),
+	  genre_id VARCHAR (255),
     music_id VARCHAR(255),    
     FOREIGN KEY (music_id) REFERENCES labemusic_music(id),
     FOREIGN KEY (genre_id) REFERENCES labemusic_genre(id)    
