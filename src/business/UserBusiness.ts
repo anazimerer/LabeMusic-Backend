@@ -8,6 +8,13 @@ import { IdGenerator } from './../services/IdGenerator';
 import { UserInputDTO, LoginInputDTO, User } from './../model/User';
 
 export class UserBusiness {
+
+    constructor(
+        private userDatabase: UserDatabase,
+        private idGenerator: IdGenerator,
+        private hashManager: HashManager,
+        private authenticator: Authenticator
+    ) { }
     async createUser(input: UserInputDTO) {
         if (!input.name || !input.nickname || !input.email || !input.password) {
             throw new InvalidParameterError("Fill all the blanks")
@@ -17,17 +24,15 @@ export class UserBusiness {
             throw new GenericError("Your password must be at least 6 characters")
         }
 
-        const idGenerator = new IdGenerator()
-        const id = idGenerator.generate()
+        if (input.email.indexOf('@') === -1) {
+            throw new InvalidParameterError("Invalid email")
 
-        const hashManager = new HashManager()
-        const hashPassword = await hashManager.hash(input.password)
+        }
 
-        const userDatabase = new UserDatabase()
-        await userDatabase.createUser(id, input.name, input.nickname, input.email, hashPassword)
-
-        const authenticator = new Authenticator()
-        const token = authenticator.generateToken({ id })
+        const id = this.idGenerator.generate()
+        const hashPassword = await this.hashManager.hash(input.password)
+        await this.userDatabase.createUser(id, input.name, input.nickname, input.email, hashPassword)
+        const token = this.authenticator.generateToken({ id })
 
         return token;
     }
@@ -37,21 +42,22 @@ export class UserBusiness {
             throw new InvalidParameterError("Requires email or nickname and password")
         }
 
-        const userDatabase = new UserDatabase();
-        const userFromDb: User = await userDatabase.getUser(input.nickname, input.email)
+        const userFromDb: User = await this.userDatabase.getUser(input.nickname, input.email)
 
-        const hashManager = new HashManager()
-        const passwordIsCorrect = await hashManager.compare(input.password, userFromDb.getPassword())
+        if (!userFromDb) {
+            throw new NotFoundError("User not found")
+        }
+
+        const passwordIsCorrect = await this.hashManager.compare(input.password, userFromDb.getPassword())
 
         if (!passwordIsCorrect) {
             throw new NotFoundError("Incorrect password")
         }
 
-        const authenticator = new Authenticator()
-        const token = authenticator.generateToken({ id: userFromDb.getId() })
+        const token = this.authenticator.generateToken({ id: userFromDb.getId() })
 
         if (!token) {
-            throw new NotFoundError("User not fond")
+            throw new NotFoundError("User not found")
         }
 
         return token;
