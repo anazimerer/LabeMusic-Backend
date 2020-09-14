@@ -31,6 +31,17 @@ export class MusicDatabase extends BaseDatabase {
         }
     }
 
+    public async getMusicById(id: string) {
+        try {
+            const result = await this.getConnection()
+                .select("*")
+                .from(MusicDatabase.TABLE_NAME)
+                .where({ id })
+            return result
+        } catch (error) {
+            throw new Error(error.sqlMessage || error.message)
+        }
+    }
 
 
 }

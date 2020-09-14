@@ -15,10 +15,14 @@ export class MusicBusiness {
 
     async createMusic(
         input: MusicInputDTO,
-        genreName: string,
+        genreName: string[],
         token: string) {
-        if (!input.title || !input.author || !input.date || !input.album || !input.file || !genreName) {
+        if (!input.title || !input.author || !input.date || !input.album || !input.file) {
             throw new InvalidParameterError("Missing input")
+        }
+
+        if (genreName.length <= 0) {
+            throw new InvalidParameterError("Requires genre")
         }
 
         if (!token) {
@@ -32,10 +36,11 @@ export class MusicBusiness {
             throw new InvalidParameterError("Requires valid token")
         }
 
-        const genreId = await this.genreDatabase.getGenre(genreName)
+        const genreId: string[] = await this.genreDatabase.getGenreByName(genreName)
 
-        if (!genreId) {
-            throw new InvalidParameterError("Invalid genre")
+        console.log("Array de ids" + genreId)
+        if (genreId.length !== genreName.length) {
+            throw new InvalidParameterError("Some genre is not valid")
         }
 
         const musicId = this.idGenerator.generate();
@@ -52,4 +57,21 @@ export class MusicBusiness {
 
         await this.genreDatabase.insertGenreToMusic(musicId, genreId);
     }
+
+    async getMusicById(id: string, token: string) {
+        if (!id || !token) {
+            throw new InvalidParameterError("Missing id")
+        }
+        const authenticationData = this.authenticator.getData(token);
+
+        if (!authenticationData) {
+            throw new InvalidParameterError("Requires valid token")
+        }
+
+        const music = await this.musicDatabase.getMusicById(id)
+
+        return music;
+    }
+
+
 }
