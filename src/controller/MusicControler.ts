@@ -35,7 +35,6 @@ export class MusicController {
             const genre: string[] = req.body.genre
             const token = req.headers.authorization as string
 
-            console.log("Controller: arrauy de generos" + genre)
             await MusicController.musicBusiness.createMusic(input, genre, token)
 
             res.status(200).send("Music created successfully")
@@ -55,9 +54,9 @@ export class MusicController {
 
             const result = await MusicController.musicBusiness.getMusicById(id, token)
 
-            const genreOfMusic: string[] = await MusicController.genreBusiness.getGenreById(genreId)
+            //const genreOfMusic: string[] = await MusicController.genreBusiness.getGenreById(genreId)
 
-            res.status(200).send({ result, genreOfMusic });
+            res.status(200).send({ result });
         } catch (error) {
             res.status(error.errorCode || 400).send({ message: error.message });
         }
