@@ -3,17 +3,9 @@ export interface GenreInputDTO {
     name: GenreName
 }
 
-export interface GenreNameInputAndOutputDTO {
-    genreNames: string[]
-}
-
-export interface GenreIdInputAndOutputDTO {
-    genreIds: string[]
-}
-
 export interface InsertGenreToMusicInputDTO {
     musicId: string,
-    genreIds: GenreIdInputAndOutputDTO
+    genreIds: string[]
 }
 export enum GenreName {
     AXÉ = "AXÉ",

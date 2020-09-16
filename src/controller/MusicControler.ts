@@ -1,4 +1,3 @@
-import { GenreNameInputAndOutputDTO } from './../model/Genre';
 import { GenreBusiness } from './../business/GenreBusiness';
 import { MusicBusiness } from './../business/MusicBusiness';
 import { Request, Response } from 'express';
@@ -33,7 +32,9 @@ export class MusicController {
             }
 
 
-            const genre: GenreNameInputAndOutputDTO = req.body.genre
+            const genre: string[] = req.body.genre
+            console.log("Controller" + genre)
+
             const token = req.headers.authorization as string
 
             await MusicController.musicBusiness.createMusic(input, genre, token)
@@ -54,12 +55,22 @@ export class MusicController {
 
             const result = await MusicController.musicBusiness.getMusicById(id, token)
 
-            res.status(200).send({ music: result.music, genre: result.genre });
+            res.status(200).send(result);
 
         } catch (error) {
             res.status(error.errorCode || 400).send({ message: error.message });
         }
         await BaseDatabase.destroyConnection()
     }
+
+    //async getAllMusics(req: Request, res: Response): Promise<void> {
+    //    try {
+    //        const token = req.headers.authorization as string
+    //
+    //        const result = await MusicController.musicBusiness.getAllMusics(token)
+    //    } catch (error) {
+    //
+    //    }
+    //}
 }
 

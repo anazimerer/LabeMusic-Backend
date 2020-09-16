@@ -8,7 +8,6 @@ export class MusicDatabase extends BaseDatabase {
     public async createMusic(
         music: CreateMusicInputDTO
     ) {
-
         try {
             await this.getConnection()
                 .insert({

@@ -2,7 +2,7 @@ import { GenreDatabase } from './../data/GenreDatabase';
 import { GenericError } from './../error/GenericError';
 import { InvalidParameterError } from './../error/InvalidParameterError';
 import { MusicInputDTO, CreateMusicInputDTO, MusicOutputDTO, MusicAndGenreOutputDTO } from './../model/Music';
-import { GenreNameInputAndOutputDTO, GenreIdInputAndOutputDTO, InsertGenreToMusicInputDTO } from './../model/Genre'
+import { InsertGenreToMusicInputDTO } from './../model/Genre'
 import { AuthenticationData, Authenticator } from './../services/Authenticator';
 import { IdGenerator } from './../services/IdGenerator';
 import { MusicDatabase } from './../data/MusicDatabase';
@@ -17,14 +17,14 @@ export class MusicBusiness {
 
     async createMusic(
         input: MusicInputDTO,
-        genreName: GenreNameInputAndOutputDTO,
+        genreName: string[],
         token: string): Promise<void> {
 
         if (!input.title || !input.author || !input.date || !input.album || !input.file) {
             throw new InvalidParameterError("Missing input")
         }
 
-        if (genreName.genreNames.length <= 0) {
+        if (genreName.length <= 0) {
             throw new InvalidParameterError("Requires genre")
         }
 
@@ -35,8 +35,14 @@ export class MusicBusiness {
         const authenticationData: AuthenticationData = this.authenticator.getData(token);
 
 
-        if (!authenticationData.id) {
+        if (!authenticationData.id || !authenticationData) {
             throw new InvalidParameterError("Requires valid token")
+        }
+
+        const genreId: string[] = await this.genreDatabase.getGenreByName(genreName)
+
+        if (genreId.length !== genreName.length) {
+            throw new InvalidParameterError("Some genre is not valid")
         }
 
         const musicId: string = this.idGenerator.generate();
@@ -52,15 +58,9 @@ export class MusicBusiness {
         }
         await this.musicDatabase.createMusic(music);
 
-        const genreId: GenreIdInputAndOutputDTO = await this.genreDatabase.getGenreByName(genreName.genreNames)
-
-        if (genreId.genreIds.length !== genreName.genreNames.length) {
-            throw new InvalidParameterError("Some genre is not valid")
-        }
-
         const insertGenreToMusicInput: InsertGenreToMusicInputDTO = {
             musicId: musicId,
-            genreIds: genreId
+            genreIds: genreId as string[]
         }
         await this.genreDatabase.insertGenreToMusic(insertGenreToMusicInput);
     }
@@ -75,15 +75,15 @@ export class MusicBusiness {
             throw new InvalidParameterError("Requires valid token")
         }
         const music: MusicOutputDTO = await this.musicDatabase.getMusicById(id)
-        const genreIds: string[] = await this.genreDatabase.getGenreByMusicId(id)
+        const genreId: string[] = await this.genreDatabase.getGenreByMusicId(id)
 
-        if (!genreIds) {
+        if (!genreId) {
             throw new GenericError("Genres not found")
         }
 
-        const genreNames: GenreNameInputAndOutputDTO = await this.genreDatabase.getGenreById(genreIds)
+        const genreNames: string[] = await this.genreDatabase.getGenreById(genreId)
 
-        if (genreIds.length !== genreNames.genreNames.length) {
+        if (genreId.length !== genreNames.length) {
             throw new GenericError("Some genre is not found")
         }
 
