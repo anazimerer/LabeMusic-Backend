@@ -1,3 +1,4 @@
+import { GenreNameInputAndOutputDTO } from './../model/Genre';
 import { GenreBusiness } from './../business/GenreBusiness';
 import { MusicBusiness } from './../business/MusicBusiness';
 import { Request, Response } from 'express';
@@ -21,7 +22,7 @@ export class MusicController {
         new Authenticator()
     )
 
-    async createMusic(req: Request, res: Response) {
+    async createMusic(req: Request, res: Response): Promise<void> {
         try {
             const input: MusicInputDTO = {
                 title: req.body.title,
@@ -32,7 +33,7 @@ export class MusicController {
             }
 
 
-            const genre: string[] = req.body.genre
+            const genre: GenreNameInputAndOutputDTO = req.body.genre
             const token = req.headers.authorization as string
 
             await MusicController.musicBusiness.createMusic(input, genre, token)
@@ -46,7 +47,7 @@ export class MusicController {
         await BaseDatabase.destroyConnection()
     }
 
-    async getMusic(req: Request, res: Response) {
+    async getMusic(req: Request, res: Response): Promise<void> {
         try {
             const id = req.params.id
             const token = req.headers.authorization as string

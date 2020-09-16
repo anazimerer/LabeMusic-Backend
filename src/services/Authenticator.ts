@@ -22,6 +22,6 @@ export class Authenticator {
     }
 }
 
-interface AuthenticationData {
+export interface AuthenticationData {
     id: string
 }

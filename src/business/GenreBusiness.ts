@@ -11,12 +11,12 @@ export class GenreBusiness {
         private authenticator: Authenticator,
     ) { }
 
-    async getGenreByMusicId(id: string) {
+    async getGenreByMusicId(id: string): Promise<string[]> {
         if (!id) {
             throw new InvalidParameterError("Missing id")
         }
 
-        const genre = await this.genreDatabase.getGenreByMusicId(id)
+        const genre: string[] = await this.genreDatabase.getGenreByMusicId(id)
 
         return genre;
     }

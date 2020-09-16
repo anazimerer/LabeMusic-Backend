@@ -1,3 +1,4 @@
+import { CreateMusicInputDTO, MusicOutputDTO } from './../model/Music';
 import moment from 'moment';
 import { BaseDatabase } from './BaseDatabase';
 
@@ -5,25 +6,19 @@ export class MusicDatabase extends BaseDatabase {
     public static TABLE_NAME = "labemusic_music"
 
     public async createMusic(
-        id: string,
-        title: string,
-        author: string,
-        date: Date,
-        file: string,
-        album: string,
-        userId: string
+        music: CreateMusicInputDTO
     ) {
 
         try {
             await this.getConnection()
                 .insert({
-                    id: id,
-                    title: title,
-                    author: author,
-                    date: new Date(date),
-                    file: file,
-                    album: album,
-                    user_id: userId
+                    id: music.musicId,
+                    title: music.title,
+                    author: music.author,
+                    date: new Date(music.date),
+                    file: music.file,
+                    album: music.album,
+                    user_id: music.userId
                 })
                 .into(MusicDatabase.TABLE_NAME)
         } catch (error) {
@@ -34,7 +29,7 @@ export class MusicDatabase extends BaseDatabase {
     public async getMusicById(id: string) {
 
         try {
-            const result = await this.getConnection()
+            const result: MusicOutputDTO | any = await this.getConnection()
                 .select("*")
                 .from(MusicDatabase.TABLE_NAME)
                 .where({ id })

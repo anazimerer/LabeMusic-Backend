@@ -1,11 +1,12 @@
 import { GenreDatabase } from './../data/GenreDatabase';
 import { GenericError } from './../error/GenericError';
 import { InvalidParameterError } from './../error/InvalidParameterError';
-import { MusicInputDTO, GenreInputDTO, GenreName } from './../model/Music';
-import { Authenticator } from './../services/Authenticator';
+import { MusicInputDTO, CreateMusicInputDTO, MusicOutputDTO, MusicAndGenreOutputDTO } from './../model/Music';
+import { GenreNameInputAndOutputDTO, GenreIdInputAndOutputDTO, InsertGenreToMusicInputDTO } from './../model/Genre'
+import { AuthenticationData, Authenticator } from './../services/Authenticator';
 import { IdGenerator } from './../services/IdGenerator';
 import { MusicDatabase } from './../data/MusicDatabase';
-import { stringify } from 'querystring';
+
 export class MusicBusiness {
     constructor(
         private musicDatabase: MusicDatabase,
@@ -16,13 +17,14 @@ export class MusicBusiness {
 
     async createMusic(
         input: MusicInputDTO,
-        genreName: string[],
-        token: string) {
+        genreName: GenreNameInputAndOutputDTO,
+        token: string): Promise<void> {
+
         if (!input.title || !input.author || !input.date || !input.album || !input.file) {
             throw new InvalidParameterError("Missing input")
         }
 
-        if (genreName.length <= 0) {
+        if (genreName.genreNames.length <= 0) {
             throw new InvalidParameterError("Requires genre")
         }
 
@@ -30,57 +32,66 @@ export class MusicBusiness {
             throw new GenericError("Requires token")
         }
 
-        const authenticationData = this.authenticator.getData(token);
+        const authenticationData: AuthenticationData = this.authenticator.getData(token);
 
 
         if (!authenticationData.id) {
             throw new InvalidParameterError("Requires valid token")
         }
 
-        const musicId = this.idGenerator.generate();
+        const musicId: string = this.idGenerator.generate();
 
-        await this.musicDatabase.createMusic(
-            musicId,
-            input.title,
-            input.author,
-            input.date,
-            input.file,
-            input.album,
-            authenticationData.id
-        );
+        const music: CreateMusicInputDTO = {
+            musicId: musicId,
+            title: input.title,
+            author: input.author,
+            date: input.date,
+            file: input.file,
+            album: input.album,
+            userId: authenticationData.id
+        }
+        await this.musicDatabase.createMusic(music);
 
-        const genreId: string[] = await this.genreDatabase.getGenreByName(genreName)
+        const genreId: GenreIdInputAndOutputDTO = await this.genreDatabase.getGenreByName(genreName.genreNames)
 
-        if (genreId.length !== genreName.length) {
+        if (genreId.genreIds.length !== genreName.genreNames.length) {
             throw new InvalidParameterError("Some genre is not valid")
         }
 
-        await this.genreDatabase.insertGenreToMusic(musicId, genreId);
+        const insertGenreToMusicInput: InsertGenreToMusicInputDTO = {
+            musicId: musicId,
+            genreIds: genreId
+        }
+        await this.genreDatabase.insertGenreToMusic(insertGenreToMusicInput);
     }
 
-    async getMusicById(id: string, token: string) {
+    async getMusicById(id: string, token: string): Promise<MusicAndGenreOutputDTO> {
         if (!id || !token) {
             throw new InvalidParameterError("Missing id")
         }
-        const authenticationData = this.authenticator.getData(token);
+        const authenticationData: AuthenticationData = this.authenticator.getData(token);
 
         if (!authenticationData) {
             throw new InvalidParameterError("Requires valid token")
         }
-        const music = await this.musicDatabase.getMusicById(id)
+        const music: MusicOutputDTO = await this.musicDatabase.getMusicById(id)
         const genreIds: string[] = await this.genreDatabase.getGenreByMusicId(id)
 
         if (!genreIds) {
             throw new GenericError("Genres not found")
         }
 
-        const genreNames: string[] = await this.genreDatabase.getGenreById(genreIds)
+        const genreNames: GenreNameInputAndOutputDTO = await this.genreDatabase.getGenreById(genreIds)
 
-        if (genreIds.length !== genreNames.length) {
+        if (genreIds.length !== genreNames.genreNames.length) {
             throw new GenericError("Some genre is not found")
         }
 
-        return { music: music, genre: genreNames };
+        const result: MusicAndGenreOutputDTO = {
+            music: music,
+            genre: genreNames
+        }
+        return result;
     }
 
 
