@@ -33,7 +33,6 @@ export class MusicController {
 
 
             const genre: string[] = req.body.genre
-            console.log("Controller" + genre)
 
             const token = req.headers.authorization as string
 
@@ -51,26 +50,25 @@ export class MusicController {
     async getMusic(req: Request, res: Response): Promise<void> {
         try {
             const id = req.params.id
-            const token = req.headers.authorization as string
-
-            const result = await MusicController.musicBusiness.getMusicById(id, token)
-
-            res.status(200).send(result);
-
+            const token = req.headers.authorization as string  //
+            const result = await MusicController.musicBusiness.getMusicById(id, token)  //
+            res.status(200).send(result);  //
         } catch (error) {
             res.status(error.errorCode || 400).send({ message: error.message });
         }
         await BaseDatabase.destroyConnection()
     }
 
-    //async getAllMusics(req: Request, res: Response): Promise<void> {
-    //    try {
-    //        const token = req.headers.authorization as string
-    //
-    //        const result = await MusicController.musicBusiness.getAllMusics(token)
-    //    } catch (error) {
-    //
-    //    }
-    //}
+    async getFeed(req: Request, res: Response) {
+        try {
+            const token = req.headers.authorization as string
+
+            const result = await MusicController.musicBusiness.getAllMusics(token)
+
+            res.status(200).send({ result })
+        } catch (error) {
+            res.status(error.errorCode || 400).send({ message: error.message });
+        }
+    }
 }
 

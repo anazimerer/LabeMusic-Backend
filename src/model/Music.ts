@@ -1,5 +1,3 @@
-import { GenreNameInputAndOutputDTO } from "./Genre";
-
 export interface MusicInputDTO {
     title: string,
     author: string,
@@ -17,6 +15,24 @@ export interface MusicOutputDTO {
     album: string,
     userId: string
 }
+export interface ListMusicOutputDTO {
+    musics:
+    {
+        id: string
+        title: string,
+        author: string,
+        date: Date,
+        file: string,
+        album: string,
+        userId: string
+    }
+
+}
+
+export interface MusicAndGenreIds {
+    music: MusicOutputDTO,
+    genres: string[]
+}
 export interface CreateMusicInputDTO {
     musicId: string
     title: string,
@@ -29,7 +45,7 @@ export interface CreateMusicInputDTO {
 
 export interface MusicAndGenreOutputDTO {
     music: MusicOutputDTO,
-    genre: GenreNameInputAndOutputDTO
+    genre: string[]
 }
 export class Music {
     constructor(

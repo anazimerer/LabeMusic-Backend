@@ -94,5 +94,19 @@ export class MusicBusiness {
         return result;
     }
 
+    async getAllMusics(token: string): Promise<any> {
+        if (!token) {
+            throw new InvalidParameterError("Missing token")
+        }
 
+        const authenticationData: AuthenticationData = this.authenticator.getData(token);
+
+        if (!authenticationData) {
+            throw new InvalidParameterError("Requires valid token")
+        }
+
+        const allMusics: string[] = await this.musicDatabase.getAllMusics()
+
+        return allMusics
+    }
 }

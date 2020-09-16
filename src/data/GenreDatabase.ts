@@ -45,13 +45,13 @@ export class GenreDatabase extends BaseDatabase {
             const genreIds: string[] = result[0].map((item: any) => {
                 return item.genre_id
             })
-
-
             return genreIds
         } catch (error) {
             throw new Error(error.sqlMessage || error.message)
         }
     }
+
+
     public async insertGenreToMusic(input: InsertGenreToMusicInputDTO): Promise<void> {
         try {
             const insertGenreToMusic = input.genreIds.map((item: any) => {
