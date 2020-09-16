@@ -49,14 +49,12 @@ export class MusicController {
     async getMusic(req: Request, res: Response) {
         try {
             const id = req.params.id
-            const genreId: string[] = req.body.genre
             const token = req.headers.authorization as string
 
             const result = await MusicController.musicBusiness.getMusicById(id, token)
 
-            //const genreOfMusic: string[] = await MusicController.genreBusiness.getGenreById(genreId)
+            res.status(200).send({ music: result.music, genre: result.genre });
 
-            res.status(200).send({ result });
         } catch (error) {
             res.status(error.errorCode || 400).send({ message: error.message });
         }

@@ -32,26 +32,14 @@ export class MusicDatabase extends BaseDatabase {
     }
 
     public async getMusicById(id: string) {
+
         try {
-            const result = await this.getConnection().raw(
-                `
-                SELECT 
-                m.id,
-                m.title,
-                m.author,
-                m.file,
-                m.album, 
-                m.user_id,
-                m.date,
-                g.name as "genre"
-                FROM labemusic_music m
-                JOIN labemusic_music_genre mg
-                ON m.id = mg.music_id
-                JOIN labemusic_genre g 
-                ON mg.genre_id = g.id
-                WHERE m.id= "${id}";
-                `)
-            return result[0][0]
+            const result = await this.getConnection()
+                .select("*")
+                .from(MusicDatabase.TABLE_NAME)
+                .where({ id })
+
+            return result
         } catch (error) {
             throw new Error(error.sqlMessage || error.message)
         }

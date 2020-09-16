@@ -1,10 +1,11 @@
 import { GenreDatabase } from './../data/GenreDatabase';
 import { GenericError } from './../error/GenericError';
 import { InvalidParameterError } from './../error/InvalidParameterError';
-import { MusicInputDTO, GenreInputDTO } from './../model/Music';
+import { MusicInputDTO, GenreInputDTO, GenreName } from './../model/Music';
 import { Authenticator } from './../services/Authenticator';
 import { IdGenerator } from './../services/IdGenerator';
 import { MusicDatabase } from './../data/MusicDatabase';
+import { stringify } from 'querystring';
 export class MusicBusiness {
     constructor(
         private musicDatabase: MusicDatabase,
@@ -36,13 +37,6 @@ export class MusicBusiness {
             throw new InvalidParameterError("Requires valid token")
         }
 
-        const genreId: string[] = await this.genreDatabase.getGenreByName(genreName)
-
-        console.log("Array de ids" + genreId)
-        if (genreId.length !== genreName.length) {
-            throw new InvalidParameterError("Some genre is not valid")
-        }
-
         const musicId = this.idGenerator.generate();
 
         await this.musicDatabase.createMusic(
@@ -54,6 +48,12 @@ export class MusicBusiness {
             input.album,
             authenticationData.id
         );
+
+        const genreId: string[] = await this.genreDatabase.getGenreByName(genreName)
+
+        if (genreId.length !== genreName.length) {
+            throw new InvalidParameterError("Some genre is not valid")
+        }
 
         await this.genreDatabase.insertGenreToMusic(musicId, genreId);
     }
@@ -67,10 +67,20 @@ export class MusicBusiness {
         if (!authenticationData) {
             throw new InvalidParameterError("Requires valid token")
         }
-
         const music = await this.musicDatabase.getMusicById(id)
+        const genreIds: string[] = await this.genreDatabase.getGenreByMusicId(id)
 
-        return music;
+        if (!genreIds) {
+            throw new GenericError("Genres not found")
+        }
+
+        const genreNames: string[] = await this.genreDatabase.getGenreById(genreIds)
+
+        if (genreIds.length !== genreNames.length) {
+            throw new GenericError("Some genre is not found")
+        }
+
+        return { music: music, genre: genreNames };
     }
 
 
