@@ -3,7 +3,8 @@ export interface MusicInputDTO {
     author: string,
     date: Date,
     file: string,
-    album: string
+    album: string,
+    urlPhoto: string
 }
 
 export interface MusicOutputDTO {
@@ -13,19 +14,20 @@ export interface MusicOutputDTO {
     date: Date,
     file: string,
     album: string,
-    userId: string
+    userId: string,
+    urlPhoto: string
 }
 export interface ListMusicOutputDTO {
-    musics:
-    {
-        id: string
-        title: string,
-        author: string,
-        date: Date,
-        file: string,
-        album: string,
-        userId: string
-    }
+
+    id: string
+    title: string,
+    author: string,
+    date: Date,
+    file: string,
+    album: string,
+    userId: string,
+    urlPhoto: string
+
 
 }
 
@@ -40,7 +42,8 @@ export interface CreateMusicInputDTO {
     date: Date,
     file: string,
     album: string,
-    userId: string
+    userId: string,
+    urlPhoto: string
 }
 
 export interface MusicAndGenreOutputDTO {
@@ -54,10 +57,11 @@ export class Music {
         private author: string,
         private date: Date,
         private file: string,
-        private album: string
+        private album: string,
+        private urlPhoto: string
     ) { }
 
     static toMusicModel(music: any): Music {
-        return new Music(music.id, music.title, music.author, music.date, music.file, music.album);
+        return new Music(music.id, music.title, music.author, music.date, music.file, music.album, music.urlPhoto);
     }
 }

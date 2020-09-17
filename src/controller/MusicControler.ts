@@ -28,7 +28,8 @@ export class MusicController {
                 author: req.body.author,
                 date: req.body.date,
                 file: req.body.file,
-                album: req.body.album
+                album: req.body.album,
+                urlPhoto: req.body.url_photo
             }
 
 
@@ -63,7 +64,7 @@ export class MusicController {
         try {
             const token = req.headers.authorization as string
 
-            const result = await MusicController.musicBusiness.getAllMusics(token)
+            const result = await MusicController.musicBusiness.getFeed(token)
 
             res.status(200).send({ result })
         } catch (error) {

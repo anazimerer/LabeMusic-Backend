@@ -1,4 +1,7 @@
-import { CreateMusicInputDTO, ListMusicOutputDTO, MusicOutputDTO, MusicAndGenreIds } from './../model/Music';
+import { Authenticator } from './../services/Authenticator';
+import { GenreDatabase } from './GenreDatabase';
+import { GenreName } from './../model/Genre';
+import { CreateMusicInputDTO, MusicOutputDTO, MusicAndGenreIds, MusicAndGenreOutputDTO } from './../model/Music';
 import { BaseDatabase } from './BaseDatabase';
 
 
@@ -17,7 +20,8 @@ export class MusicDatabase extends BaseDatabase {
                     date: new Date(music.date),
                     file: music.file,
                     album: music.album,
-                    user_id: music.userId
+                    user_id: music.userId,
+                    url_photo: music.urlPhoto
                 })
                 .into(MusicDatabase.TABLE_NAME)
         } catch (error) {
@@ -38,41 +42,23 @@ export class MusicDatabase extends BaseDatabase {
         }
     }
 
-    public async getGenreByMusicId2(musicId: string): Promise<string[]> {
-        try {
-            const result = await this.getConnection().raw(
-                `
-                SELECT * 
-                FROM labemusic_music_genre
-                WHERE music_id="${musicId}";`
-            )
-
-            const genreNames: string[] = result[0].map((item: any) => {
-                return item.genre_name
-            })
-            return genreNames
-        } catch (error) {
-            throw new Error(error.sqlMessage || error.message)
-        }
-    }
-
     public async getAllMusics(): Promise<any> {
+        const genreDatabase = new GenreDatabase()
         try {
-            const allMusics: ListMusicOutputDTO[] = await this.getConnection()
+            const allMusics: MusicOutputDTO[] = await this.getConnection()
                 .select("*")
                 .from(MusicDatabase.TABLE_NAME);
 
-            //const allMusicsIds = allMusics.map((item: any) => {
-            //    return item.id
-            //})
-
-            let allMusicsAndGenres = {}
-            //for (let music of allMusics) {
-            //    const id = music.musics.id
-            //    const genreNames: string[] = await this.getGenreByMusicId2(id)
-            //    allMusicsAndGenres = { ...music, genre: genreNames }
-            //}
-            return allMusics
+            let allMusicsAndGenres = []
+            for (let item of allMusics) {
+                const genreIds = await genreDatabase.getGenreByMusicId(item.id)
+                const genreNames = await genreDatabase.getGenreByNameOrId([], genreIds)
+                allMusicsAndGenres.push({
+                    ...item,
+                    genre: genreNames
+                })
+            }
+            return allMusicsAndGenres
 
         } catch (error) {
             throw new Error(error.sqlMessage || error.message)
