@@ -1,8 +1,3 @@
-export interface GenreInputDTO {
-    id: string,
-    name: GenreName
-}
-
 export interface MusicInputDTO {
     title: string,
     author: string,
@@ -10,23 +5,48 @@ export interface MusicInputDTO {
     file: string,
     album: string
 }
-export enum GenreName {
-    AXÉ = "AXÉ",
-    FUNK = "FUNK",
-    SERTANEJO = "SERTANEJO",
-    MPB = "MPB",
-    ROCK = "ROCK",
-    HIPHOP = "HIP HOP",
-    CLASSICA = "CLÁSSICA",
-    GROOVE = "GROOVE",
-    RAP = "RAP",
-    REGGAE = "REGGAE",
-    SAMBA = "SAMBA",
-    FORRÓ = "FORRÓ",
-    OUTRO = "OUTRO"
+
+export interface MusicOutputDTO {
+    id: string
+    title: string,
+    author: string,
+    date: Date,
+    file: string,
+    album: string,
+    userId: string
+}
+export interface ListMusicOutputDTO {
+    musics:
+    {
+        id: string
+        title: string,
+        author: string,
+        date: Date,
+        file: string,
+        album: string,
+        userId: string
+    }
+
 }
 
+export interface MusicAndGenreIds {
+    music: MusicOutputDTO,
+    genres: string[]
+}
+export interface CreateMusicInputDTO {
+    musicId: string
+    title: string,
+    author: string,
+    date: Date,
+    file: string,
+    album: string,
+    userId: string
+}
 
+export interface MusicAndGenreOutputDTO {
+    music: MusicOutputDTO,
+    genre: string[]
+}
 export class Music {
     constructor(
         private id: string,

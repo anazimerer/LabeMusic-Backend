@@ -59,6 +59,14 @@ export interface UserInputDTO {
     nickname: string;
 }
 
+export interface CreateUserInputDTO {
+    id: string,
+    name: string;
+    nickname: string;
+    email: string,
+    hash: string
+}
+
 export interface LoginInputDTO {
     email?: string;
     nickname?: string;

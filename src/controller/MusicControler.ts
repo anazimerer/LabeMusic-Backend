@@ -1,3 +1,4 @@
+import { GenreBusiness } from './../business/GenreBusiness';
 import { MusicBusiness } from './../business/MusicBusiness';
 import { Request, Response } from 'express';
 import { MusicInputDTO } from "../model/Music";
@@ -14,7 +15,13 @@ export class MusicController {
         new IdGenerator(),
         new Authenticator())
 
-    async createMusic(req: Request, res: Response) {
+    private static genreBusiness = new GenreBusiness(
+        new GenreDatabase(),
+        new IdGenerator(),
+        new Authenticator()
+    )
+
+    async createMusic(req: Request, res: Response): Promise<void> {
         try {
             const input: MusicInputDTO = {
                 title: req.body.title,
@@ -25,10 +32,11 @@ export class MusicController {
             }
 
 
-            const genre = req.body.genre
+            const genre: string[] = req.body.genre
+
             const token = req.headers.authorization as string
 
-            const result = await MusicController.musicBusiness.createMusic(input, genre, token)
+            await MusicController.musicBusiness.createMusic(input, genre, token)
 
             res.status(200).send("Music created successfully")
 
@@ -37,6 +45,30 @@ export class MusicController {
         }
 
         await BaseDatabase.destroyConnection()
+    }
+
+    async getMusic(req: Request, res: Response): Promise<void> {
+        try {
+            const id = req.params.id
+            const token = req.headers.authorization as string  //
+            const result = await MusicController.musicBusiness.getMusicById(id, token)  //
+            res.status(200).send(result);  //
+        } catch (error) {
+            res.status(error.errorCode || 400).send({ message: error.message });
+        }
+        await BaseDatabase.destroyConnection()
+    }
+
+    async getFeed(req: Request, res: Response) {
+        try {
+            const token = req.headers.authorization as string
+
+            const result = await MusicController.musicBusiness.getAllMusics(token)
+
+            res.status(200).send({ result })
+        } catch (error) {
+            res.status(error.errorCode || 400).send({ message: error.message });
+        }
     }
 }
 

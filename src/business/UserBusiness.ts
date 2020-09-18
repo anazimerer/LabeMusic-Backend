@@ -8,14 +8,13 @@ import { IdGenerator } from './../services/IdGenerator';
 import { UserInputDTO, LoginInputDTO, User } from './../model/User';
 
 export class UserBusiness {
-
     constructor(
         private userDatabase: UserDatabase,
         private idGenerator: IdGenerator,
         private hashManager: HashManager,
         private authenticator: Authenticator
     ) { }
-    async createUser(input: UserInputDTO) {
+    async createUser(input: UserInputDTO): Promise<string> {
         if (!input.name || !input.nickname || !input.email || !input.password) {
             throw new InvalidParameterError("Fill all the blanks")
         }
@@ -29,15 +28,15 @@ export class UserBusiness {
 
         }
 
-        const id = this.idGenerator.generate()
+        const id: string = this.idGenerator.generate()
         const hashPassword = await this.hashManager.hash(input.password)
         await this.userDatabase.createUser(id, input.name, input.nickname, input.email, hashPassword)
-        const token = this.authenticator.generateToken({ id })
+        const token: string = this.authenticator.generateToken({ id })
 
         return token;
     }
 
-    async getUser(input: LoginInputDTO) {
+    async getUser(input: LoginInputDTO): Promise<string> {
         if ((!input.email && !input.nickname) || !input.password) {
             throw new InvalidParameterError("Requires email or nickname and password")
         }
@@ -48,13 +47,13 @@ export class UserBusiness {
             throw new NotFoundError("User not found")
         }
 
-        const passwordIsCorrect = await this.hashManager.compare(input.password, userFromDb.getPassword())
+        const passwordIsCorrect: boolean = await this.hashManager.compare(input.password, userFromDb.getPassword())
 
         if (!passwordIsCorrect) {
             throw new NotFoundError("Incorrect password")
         }
 
-        const token = this.authenticator.generateToken({ id: userFromDb.getId() })
+        const token: string = this.authenticator.generateToken({ id: userFromDb.getId() })
 
         if (!token) {
             throw new NotFoundError("User not found")
