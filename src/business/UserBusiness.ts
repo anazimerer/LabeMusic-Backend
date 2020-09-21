@@ -41,6 +41,11 @@ export class UserBusiness {
             throw new InvalidParameterError("Requires email or nickname and password")
         }
 
+        if (input.email && input.email.indexOf('@') === -1) {
+            throw new InvalidParameterError("Invalid email")
+
+        }
+
         const userFromDb: User = await this.userDatabase.getUser(input.nickname, input.email)
 
         if (!userFromDb) {

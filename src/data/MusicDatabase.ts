@@ -1,7 +1,5 @@
-import { Authenticator } from './../services/Authenticator';
 import { GenreDatabase } from './GenreDatabase';
-import { GenreName } from './../model/Genre';
-import { CreateMusicInputDTO, MusicOutputDTO, MusicAndGenreIds, MusicAndGenreOutputDTO } from './../model/Music';
+import { CreateMusicInputDTO, MusicOutputDTO } from './../model/Music';
 import { BaseDatabase } from './BaseDatabase';
 
 

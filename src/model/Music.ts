@@ -17,24 +17,6 @@ export interface MusicOutputDTO {
     userId: string,
     urlPhoto: string
 }
-export interface ListMusicOutputDTO {
-
-    id: string
-    title: string,
-    author: string,
-    date: Date,
-    file: string,
-    album: string,
-    userId: string,
-    urlPhoto: string
-
-
-}
-
-export interface MusicAndGenreIds {
-    music: MusicOutputDTO,
-    genres: string[]
-}
 export interface CreateMusicInputDTO {
     musicId: string
     title: string,
