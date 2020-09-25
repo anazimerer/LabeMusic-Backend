@@ -3,11 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const musicRouter_1 = require("../src/routes/musicRouter");
+const musicRouter_1 = require("./routes/musicRouter");
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const useRouter_1 = require("../src/routes/useRouter");
-const feedRouter_1 = require("../src/routes/feedRouter");
+const useRouter_1 = require("./routes/useRouter");
+const feedRouter_1 = require("./routes/feedRouter");
 dotenv_1.default.config();
 const app = express_1.default();
 app.use(express_1.default.json());

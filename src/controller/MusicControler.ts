@@ -45,7 +45,7 @@ export class MusicController {
             res.status(error.errorCode || 400).send({ message: error.message });
         }
 
-        await BaseDatabase.destroyConnection()
+
     }
 
     async getMusic(req: Request, res: Response): Promise<void> {
@@ -57,7 +57,7 @@ export class MusicController {
         } catch (error) {
             res.status(error.errorCode || 400).send({ message: error.message });
         }
-        await BaseDatabase.destroyConnection()
+
     }
 
     async getFeed(req: Request, res: Response) {
