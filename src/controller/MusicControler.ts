@@ -28,7 +28,8 @@ export class MusicController {
                 author: req.body.author,
                 date: req.body.date,
                 file: req.body.file,
-                album: req.body.album
+                album: req.body.album,
+                urlPhoto: req.body.url_photo
             }
 
 
@@ -44,7 +45,7 @@ export class MusicController {
             res.status(error.errorCode || 400).send({ message: error.message });
         }
 
-        await BaseDatabase.destroyConnection()
+
     }
 
     async getMusic(req: Request, res: Response): Promise<void> {
@@ -56,14 +57,14 @@ export class MusicController {
         } catch (error) {
             res.status(error.errorCode || 400).send({ message: error.message });
         }
-        await BaseDatabase.destroyConnection()
+
     }
 
     async getFeed(req: Request, res: Response) {
         try {
             const token = req.headers.authorization as string
 
-            const result = await MusicController.musicBusiness.getAllMusics(token)
+            const result = await MusicController.musicBusiness.getFeed(token)
 
             res.status(200).send({ result })
         } catch (error) {

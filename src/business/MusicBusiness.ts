@@ -20,7 +20,7 @@ export class MusicBusiness {
         genreName: string[],
         token: string): Promise<void> {
 
-        if (!input.title || !input.author || !input.date || !input.album || !input.file) {
+        if (!input.title || !input.author || !input.date || !input.album || !input.file || !input.urlPhoto) {
             throw new InvalidParameterError("Missing input")
         }
 
@@ -39,7 +39,7 @@ export class MusicBusiness {
             throw new InvalidParameterError("Requires valid token")
         }
 
-        const genreId: string[] = await this.genreDatabase.getGenreByName(genreName)
+        const genreId: string[] = await this.genreDatabase.getGenreByNameOrId(genreName, [])
 
         if (genreId.length !== genreName.length) {
             throw new InvalidParameterError("Some genre is not valid")
@@ -54,7 +54,8 @@ export class MusicBusiness {
             date: input.date,
             file: input.file,
             album: input.album,
-            userId: authenticationData.id
+            userId: authenticationData.id,
+            urlPhoto: input.urlPhoto
         }
         await this.musicDatabase.createMusic(music);
 
@@ -81,7 +82,7 @@ export class MusicBusiness {
             throw new GenericError("Genres not found")
         }
 
-        const genreNames: string[] = await this.genreDatabase.getGenreById(genreId)
+        const genreNames: string[] = await this.genreDatabase.getGenreByNameOrId([], genreId)
 
         if (genreId.length !== genreNames.length) {
             throw new GenericError("Some genre is not found")
@@ -94,7 +95,7 @@ export class MusicBusiness {
         return result;
     }
 
-    async getAllMusics(token: string): Promise<any> {
+    async getFeed(token: string): Promise<string[] | undefined> {
         if (!token) {
             throw new InvalidParameterError("Missing token")
         }
@@ -106,6 +107,10 @@ export class MusicBusiness {
         }
 
         const allMusics: string[] = await this.musicDatabase.getAllMusics()
+
+        if (!allMusics || allMusics.length === 0) {
+            throw new GenericError("Musics not found")
+        }
 
         return allMusics
     }

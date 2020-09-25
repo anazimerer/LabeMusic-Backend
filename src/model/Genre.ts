@@ -7,6 +7,7 @@ export interface InsertGenreToMusicInputDTO {
     musicId: string,
     genreIds: string[]
 }
+
 export enum GenreName {
     AXÉ = "AXÉ",
     FUNK = "FUNK",
