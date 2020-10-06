@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/jest/bin/jest.js",
-    "start": "ts-node ./src/index.ts",
-    "build": "ts-node ./build/index.js"
+    "start": "tsc build/index.js ",
+    "build": "tsc src/index.ts"
   },
   "repository": {
     "type": "git",

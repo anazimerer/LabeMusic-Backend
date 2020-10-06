@@ -10,13 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MusicController = void 0;
-const GenreBusiness_1 = require("../src/business/GenreBusiness");
-const MusicBusiness_1 = require("../src/business/MusicBusiness");
-const IdGenerator_1 = require("../src/services/IdGenerator");
-const MusicDatabase_1 = require("../src/data/MusicDatabase");
-const Authenticator_1 = require("../src/services/Authenticator");
-const BaseDatabase_1 = require("../src/data/BaseDatabase");
-const GenreDatabase_1 = require("../src/data/GenreDatabase");
+const GenreBusiness_1 = require("./../business/GenreBusiness");
+const MusicBusiness_1 = require("./../business/MusicBusiness");
+const IdGenerator_1 = require("../services/IdGenerator");
+const MusicDatabase_1 = require("../data/MusicDatabase");
+const Authenticator_1 = require("../services/Authenticator");
+const GenreDatabase_1 = require("../data/GenreDatabase");
 class MusicController {
     createMusic(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -37,7 +36,6 @@ class MusicController {
             catch (error) {
                 res.status(error.errorCode || 400).send({ message: error.message });
             }
-            yield BaseDatabase_1.BaseDatabase.destroyConnection();
         });
     }
     getMusic(req, res) {
@@ -51,7 +49,6 @@ class MusicController {
             catch (error) {
                 res.status(error.errorCode || 400).send({ message: error.message });
             }
-            yield BaseDatabase_1.BaseDatabase.destroyConnection();
         });
     }
     getFeed(req, res) {
