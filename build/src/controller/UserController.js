@@ -10,12 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
-const IdGenerator_1 = require("../src/services/IdGenerator");
-const HashManager_1 = require("../src/services/HashManager");
-const UserBusiness_1 = require("../src/business/UserBusiness");
-const BaseDatabase_1 = require("../src/data/BaseDatabase");
-const UserDatabase_1 = require("../src/data/UserDatabase");
-const Authenticator_1 = require("../src/services/Authenticator");
+const IdGenerator_1 = require("./../services/IdGenerator");
+const HashManager_1 = require("./../services/HashManager");
+const UserBusiness_1 = require("./../business/UserBusiness");
+const UserDatabase_1 = require("../data/UserDatabase");
+const Authenticator_1 = require("../services/Authenticator");
 class UserController {
     signup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -32,7 +31,6 @@ class UserController {
             catch (error) {
                 res.status(error.errorCode || 400).send({ message: error.message });
             }
-            yield BaseDatabase_1.BaseDatabase.destroyConnection();
         });
     }
     login(req, res) {
